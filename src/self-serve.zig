@@ -114,13 +114,17 @@ pub fn main() anyerror!void {
         return;
     };
 
+    const port_str = args.next() orelse "9000";
+
     std.log.info("cwd {any} - {s}", .{ fs.cwd(), public_path });
 
     var dir = try fs.cwd().openDir(public_path, .{});
 
     std.log.info("dir {any}", .{dir});
 
-    const self_addr = try net.Address.resolveIp("127.0.0.1", 9000);
+    const port = try std.fmt.parseUnsigned(u16, port_str, 10);
+
+    const self_addr = try net.Address.resolveIp("127.0.0.1", port);
     var listener = net.StreamServer.init(.{});
     try (&listener).listen(self_addr);
 
